@@ -1,0 +1,1006 @@
+<?xml version="1.0"?>
+<!--
+  Created by Jung on 2014/8/19.
+-->
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx"
+          width="100%" height="100%" creationComplete="aneBuildView_creationCompletedHandler(event)">
+
+    <fx:Declarations>
+        <s:RadioButtonGroup id="mIOSOptionsGroup" change="mIOSOptionsGroup_changeHandler(event)"/>
+    </fx:Declarations>
+    <s:HGroup width="100%">
+        <s:Panel width="70%" height="100" title="AS3 库文件(SWC)路径配置">
+            <s:layout>
+                <s:VerticalLayout paddingLeft="10" paddingRight="10" paddingTop="10"/>
+            </s:layout>
+            <s:HGroup width="100%" verticalAlign="middle">
+                <s:Label text="SWC路径" width="60"/>
+                <s:TextInput width="100%" id="mSWCPathInput" toolTip="SWC路径" editable="false"/>
+                <s:Button label="浏览" id="mBtnForBrowseSWCPath" click="mBtnForBrowseSWCPath_clickHandler(event)"/>
+            </s:HGroup>
+            <s:HGroup width="100%" verticalAlign="middle">
+                <s:Label text="导出路径" width="60"/>
+                <s:TextInput width="100%" id="mANEExportPathInput" editable="false"/>
+                <s:Button label="浏览" id="mBtnForBrowseANEExportPath" click="mBtnForBrowseANEExportPath_clickHandler(event)"/>
+            </s:HGroup>
+        </s:Panel>
+        <s:Panel width="70%" height="100" title="数字签名">
+            <s:layout>
+                <s:VerticalLayout verticalAlign="middle" paddingLeft="10" paddingRight="10"/>
+            </s:layout>
+            <s:HGroup width="100%" verticalAlign="middle">
+                <s:Label text="证书路径" width="80"/>
+                <s:TextInput width="100%" id="mCertificatePathInput" editable="false"/>
+                <s:Button label="浏览" id="mBtnForBrowswCertificatePath" click="mBtnForBrowswCertificatePath_clickHandler(event)"/>
+            </s:HGroup>
+            <s:HGroup width="100%" verticalAlign="middle">
+                <s:Label text="密     码" width="80"/>
+                <s:TextInput width="100%" id="mCertificatePassInput" displayAsPassword="true"/>
+                <s:CheckBox id="mUseTimestampCheck" label="时间戳" width="70"/>
+            </s:HGroup>
+        </s:Panel>
+    </s:HGroup>
+    <s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center" paddingTop="5" paddingBottom="5" paddingRight="10" paddingLeft="10">
+        <s:Button label="打包(Ctrl+Enter)" id="mBtnForStartBuild" width="100%" height="30" click="mBtnForStartBuild_clickHandler(event)"/>
+    </s:HGroup>
+    <s:Panel title="本机扩展(ANE)配置" width="100%" height="100%">
+        <s:layout>
+            <s:VerticalLayout paddingTop="5" paddingLeft="10" paddingRight="10" paddingBottom="5"/>
+        </s:layout>
+        <s:HGroup width="100%">
+            <mx:CheckBox id="mDefaultExtPlatformCheck" label="包括default平台" change="mDefaultExtPlatformCheck_changeHandler(event)"/>
+            <s:Label color="#FF0000" text="红色文字为必填项" fontSize="14" width="100%" textAlign="center"/>
+        </s:HGroup>
+        <s:Line width="100%">
+            <s:stroke>
+                <mx:SolidColorStroke color="#bbbbbb"/>
+            </s:stroke>
+        </s:Line>
+        <s:HGroup width="100%">
+            <s:VGroup width="40%">
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="ID" width="70" color="#FF0000"/>
+                    <s:TextInput id="mANEIDInput" width="100%" text="grape.packager.demo"/>
+                </s:HGroup>
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="版本" width="70" color="#FF0000"/>
+                    <s:TextInput id="mANEVersionInput" width="100%" text="1"/>
+                </s:HGroup>
+            </s:VGroup>
+            <s:Line height="100%">
+                <s:stroke>
+                    <mx:SolidColorStroke color="#bbbbbb"/>
+                </s:stroke>
+            </s:Line>
+            <s:VGroup width="30%">
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="AIR版本" width="70" toolTip="使用该ANE所要求的最低AIR运行时版本"/>
+                    <s:TextInput id="mAIRVersionInput" width="100%" text="{Config.DEFAULT_AIR_VERSION}"/>
+                </s:HGroup>
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="ANE名称" width="70"/>
+                    <s:TextInput id="mANENameInput" width="100%" text="grape.packager.demo"/>
+                </s:HGroup>
+            </s:VGroup>
+            <s:Line height="100%">
+                <s:stroke>
+                    <mx:SolidColorStroke color="#bbbbbb"/>
+                </s:stroke>
+            </s:Line>
+            <s:VGroup width="30%">
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="ANE描述" width="70"/>
+                    <s:TextInput id="mANEDescriptionInput" width="100%" text="GrapePackager进行ANE打包Demo"/>
+                </s:HGroup>
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="版权声明" width="70"/>
+                    <s:TextInput id="mANECopyrightInput" width="100%"/>
+                </s:HGroup>
+            </s:VGroup>
+        </s:HGroup>
+
+        <mx:TabNavigator id="mANEPlatformTN" width="100%" tabWidth="{mANEPlatformTN.width / 5}" borderVisible="false" change="mANEPlatformTN_changeHandler(event)">
+            <s:NavigatorContent label="Android-x86">
+                <s:layout>
+                    <s:VerticalLayout/>
+                </s:layout>
+
+                <s:CheckBox id="mAndroidx86ExtPlatformCheck" width="100%" label="包括Android-x86平台" change="mAndroidx86ExtPlatformCheck_changeHandler(event)"/>
+                <s:Line width="100%">
+                    <s:stroke>
+                        <s:SolidColorStroke color="#bbbbbb"/>
+                    </s:stroke>
+                </s:Line>
+                <s:HGroup width="100%" enabled="{mAndroidx86ExtPlatformCheck.selected}">
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="本机库" width="70" color="#FF0000"/>
+                            <s:TextInput id="mAndroidx86ExtNativeLibInput" width="100%" editable="false"/>
+                            <s:Button id="mBtnForBrowseAndroidx86ExtNativeLib" label="浏览" click="mBtnForBrowseAndroidx86ExtNativeLib_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Initializer" color="#FF0000" width="70"/>
+                            <s:TextInput id="mAndroidx86ExtInitializerInput" width="100%"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Finalizer" width="70"/>
+                            <s:TextInput id="mAndroidx86ExtFinalizerInput" width="100%"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                    <s:Line height="100%">
+                        <s:stroke>
+                            <s:SolidColorStroke color="#bbbbbb"/>
+                        </s:stroke>
+                    </s:Line>
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mAndroidx86ExtAttachmentsCheck" label="附件" width="70"/>
+                            <s:TextInput id="mAndroidx86ExtAttachmentsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseAndroidx86ExtAttachments" enabled="{mAndroidx86ExtAttachmentsCheck.selected}" click="mBtnForBrowseAndroidx86ExtAttachments_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mAndroidx86ExtDependsCheck" label="依赖项" width="70"/>
+                            <s:TextInput id="mAndroidx86ExtDependsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseAndroidx86ExtDepends" enabled="{mAndroidx86ExtDependsCheck.selected}" click="mBtnForBrowseAndroidx86ExtDepends_clickHandler(event)"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+            </s:NavigatorContent>
+
+            <s:NavigatorContent label="Android-ARM">
+                <s:layout>
+                    <s:VerticalLayout/>
+                </s:layout>
+
+                <s:CheckBox id="mAndroidExtPlatformCheck" width="100%" label="包括Android-ARM平台" change="mAndroidExtPlatformCheck_changeHandler(event)"/>
+                <s:Line width="100%">
+                    <s:stroke>
+                        <s:SolidColorStroke color="#bbbbbb"/>
+                    </s:stroke>
+                </s:Line>
+                <s:HGroup width="100%" enabled="{mAndroidExtPlatformCheck.selected}">
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="本机库" width="70" color="#FF0000"/>
+                            <s:TextInput id="mAndroidExtNativeLibInput" width="100%" editable="false"/>
+                            <s:Button id="mBtnForBrowseAndroidExtNativeLib" label="浏览" click="mBtnForBrowseAndroidExtNativeLib_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Initializer" color="#FF0000" width="70"/>
+                            <s:TextInput id="mAndroidExtInitializerInput" width="100%"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Finalizer" width="70"/>
+                            <s:TextInput id="mAndroidExtFinalizerInput" width="100%"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                    <s:Line height="100%">
+                        <s:stroke>
+                            <s:SolidColorStroke color="#bbbbbb"/>
+                        </s:stroke>
+                    </s:Line>
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mAndroidExtAttachmentsCheck" label="附件" width="70"/>
+                            <s:TextInput id="mAndroidExtAttachmentsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseAndroidExtAttachments" enabled="{mAndroidExtAttachmentsCheck.selected}" click="mBtnForBrowseAndroidExtAttachments_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mAndroidExtDependsCheck" label="依赖项" width="70"/>
+                            <s:TextInput id="mAndroidExtDependsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseAndroidExtDepends" enabled="{mAndroidExtDependsCheck.selected}" click="mBtnForBrowseAndroidExtDepends_clickHandler(event)"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+            </s:NavigatorContent>
+
+            <s:NavigatorContent label="iOS">
+                <s:layout>
+                    <s:VerticalLayout/>
+                </s:layout>
+
+                <s:HGroup width="100%">
+                    <s:CheckBox id="mIOSPlatformCheck" width="100%" label="包括 iOS 平台" change="mIOSPlatformCheck_changeHandler(event)"/>
+                    <s:RadioButton enabled="{mIOSPlatformCheck.selected}" label="真机" id="mIOSRealDeviceRadio" groupName="mIOSOptionsGroup"/>
+                    <s:RadioButton enabled="{mIOSPlatformCheck.selected}" label="模拟器" id="mIOSSimulatorRadio" groupName="mIOSOptionsGroup"/>
+                </s:HGroup>
+                <s:Line width="100%">
+                    <s:stroke>
+                        <s:SolidColorStroke color="#bbbbbb"/>
+                    </s:stroke>
+                </s:Line>
+                <s:HGroup width="100%" enabled="{mIOSPlatformCheck.selected}">
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="本机库" width="70" color="#FF0000"/>
+                            <s:TextInput id="mIOSExtNativeLibInput" width="100%" editable="false"/>
+                            <s:Button id="mBtnForBrowseIOSExtNativeLib" label="浏览" click="mBtnForBrowseIOSExtNativeLib_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Initializer" color="#FF0000" width="70"/>
+                            <s:TextInput id="mIOSExtInitializerInput" width="100%"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Finalizer" width="70"/>
+                            <s:TextInput id="mIOSExtFinalizerInput" width="100%"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                    <s:Line height="100%">
+                        <s:stroke>
+                            <s:SolidColorStroke color="#bbbbbb"/>
+                        </s:stroke>
+                    </s:Line>
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mIOSExtAttachmentsCheck" label="附件" width="70"/>
+                            <s:TextInput id="mIOSExtAttachmentsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseIOSExtAttachments" enabled="{mIOSExtAttachmentsCheck.selected}" click="mBtnForBrowseIOSExtAttachments_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mIOSExtPlatformOptionsCheck" label="平台选项" width="70"/>
+                            <s:TextInput id="mIOSExtPlatformOptionsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseIOSExtPlatformOptions" enabled="{mIOSExtPlatformOptionsCheck.selected}" click="mBtnForBrowseIOSExtPlatformOptions_clickHandler(event)"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+            </s:NavigatorContent>
+
+
+            <s:NavigatorContent label="Mac OS X">
+                <s:layout>
+                    <s:VerticalLayout/>
+                </s:layout>
+
+                <s:CheckBox id="mMacOSXExtPlatformCheck" width="100%" label="包括Mac OS X平台" change="mMacOSXExtPlatformCheck_changeHandler(event)"/>
+                <s:Line width="100%">
+                    <s:stroke>
+                        <s:SolidColorStroke color="#bbbbbb"/>
+                    </s:stroke>
+                </s:Line>
+                <s:HGroup width="100%" enabled="{mMacOSXExtPlatformCheck.selected}">
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="本机库" width="70" color="#FF0000"/>
+                            <s:TextInput id="mMacOSXExtNativeLibInput" width="100%" editable="false"/>
+                            <s:Button id="mBtnForBrowseMacOSXExtNativeLib" label="浏览" click="mBtnForBrowseMacOSXExtNativeLib_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Initializer" color="#FF0000" width="70"/>
+                            <s:TextInput id="mMacOSXExtInitializerInput" width="100%"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Finalizer" width="70"/>
+                            <s:TextInput id="mMacOSXExtFinalizerInput" width="100%"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                    <s:Line height="100%">
+                        <s:stroke>
+                            <s:SolidColorStroke color="#bbbbbb"/>
+                        </s:stroke>
+                    </s:Line>
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mMacOSXExtAttachmentsCheck" label="附件" width="70"/>
+                            <s:TextInput id="mMacOSXExtAttachmentsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseMacOSXExtAttachments" enabled="{mMacOSXExtAttachmentsCheck.selected}" click="mBtnForBrowseMacOSXExtAttachments_clickHandler(event)"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+            </s:NavigatorContent>
+
+            <s:NavigatorContent label="Windows">
+                <s:layout>
+                    <s:VerticalLayout/>
+                </s:layout>
+
+                <s:CheckBox id="mWindowsExtPlatformCheck" width="100%" label="包括Windows平台" change="mWindowsExtPlatformCheck_changeHandler(event)"/>
+                <s:Line width="100%">
+                    <s:stroke>
+                        <s:SolidColorStroke color="#bbbbbb"/>
+                    </s:stroke>
+                </s:Line>
+                <s:HGroup width="100%" enabled="{mWindowsExtPlatformCheck.selected}">
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="本机库" width="70" color="#FF0000"/>
+                            <s:TextInput id="mWindowsExtNativeLibInput" width="100%" editable="false"/>
+                            <s:Button id="mBtnForBrowseWindowsExtNativeLib" label="浏览" click="mBtnForBrowseWindowsExtNativeLib_clickHandler(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Initializer" color="#FF0000" width="70"/>
+                            <s:TextInput id="mWindowsExtInitializerInput" width="100%"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:Label text="Finalizer" width="70"/>
+                            <s:TextInput id="mWindowsExtFinalizerInput" width="100%"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                    <s:Line height="100%">
+                        <s:stroke>
+                            <s:SolidColorStroke color="#bbbbbb"/>
+                        </s:stroke>
+                    </s:Line>
+                    <s:VGroup width="50%">
+                        <s:HGroup width="100%" verticalAlign="middle">
+                            <s:CheckBox id="mWindowsExtAttachmentsCheck" label="附件" width="70"/>
+                            <s:TextInput id="mWindowsExtAttachmentsInput" width="100%" editable="false"/>
+                            <s:Button label="浏览" id="mBtnForBrowseWindowsExtAttachments" enabled="{mWindowsExtAttachmentsCheck.selected}" click="mBtnForBrowseWindowsExtAttachments_clickHandler(event)"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+            </s:NavigatorContent>
+        </mx:TabNavigator>
+
+    </s:Panel>
+
+    <fx:Script><![CDATA[
+        import grape.packager.data.ANEBuildTarget;
+        import grape.packager.events.ProcessEvent;
+        import grape.packager.filters.FileFilters;
+        import grape.packager.managers.BuildManager;
+        import grape.packager.process.ANEBuildProcess;
+        import grape.packager.ui.Console;
+        import grape.packager.ui.DialogEditPlatformAttach;
+        import grape.packager.utils.StringUtil;
+
+        import mx.events.FlexEvent;
+
+        protected var aneBuildProcess:ANEBuildProcess = null;
+
+        protected var mAndroidExtNativeLibFile:File = null;
+        protected var mAndroidx86ExtNativeLibFile:File = null;
+        protected var mIOSExtNativeLibFile:File = null;
+        protected var mWindowsExtNativeLibFile:File = null;
+        protected var mMacOSXExtNativeLibFile:File = null;
+
+        protected function aneBuildView_creationCompletedHandler(event:FlexEvent):void{
+            ShowConfigData();
+        }
+
+        protected function mBtnForBrowseSWCPath_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mSWCPathInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("SWC文件",FileFilters.SWC_FILE_FILTERS);
+        }
+
+        protected function mBtnForBrowseANEExportPath_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mANEExportPathInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForDirectory("ANE导出路径");
+        }
+
+        protected function mBtnForBrowswCertificatePath_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mCertificatePathInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("证书文件",FileFilters.P12_FILE_FILTERS);
+        }
+
+        protected function mANEPlatformTN_changeHandler(event:Event):void{
+            ShiftPlatformData();
+        }
+
+        //Default
+        protected function mDefaultExtPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.defaultPlatformSelected = mDefaultExtPlatformCheck.selected;
+        }
+
+        //Android-x86
+        protected function mAndroidx86ExtPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.androidx86PlatformSelected = mAndroidx86ExtPlatformCheck.selected;
+        }
+
+        protected function mBtnForBrowseAndroidx86ExtNativeLib_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mAndroidx86ExtNativeLibInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("选择一个Android-ARM库文件",FileFilters.ANDROID_LIB_FILE_FILTERS);
+        }
+
+        protected function mBtnForBrowseAndroidx86ExtAttachments_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Android-x86本机扩展附件",mAndroidx86ExtAttachmentsInput.text,function(value:String):void{
+                mAndroidx86ExtAttachmentsInput.text = value;
+            });
+        }
+
+        protected function mBtnForBrowseAndroidx86ExtDepends_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Android-x86本机扩展依赖项",mAndroidx86ExtDependsInput.text,function(value:String):void{
+                mAndroidx86ExtDependsInput.text = value;
+            });
+        }
+
+        //Android-ARM
+        protected function mAndroidExtPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.androidPlatformSelected = mAndroidExtPlatformCheck.selected;
+        }
+
+        protected function mBtnForBrowseAndroidExtDepends_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Android-ARM本机扩展依赖项",mAndroidExtDependsInput.text,function(value:String):void{
+                mAndroidExtDependsInput.text = value;
+            });
+        }
+
+        protected function mBtnForBrowseAndroidExtAttachments_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Android-ARM本机扩展附件",mAndroidExtAttachmentsInput.text,function(value:String):void{
+                mAndroidExtAttachmentsInput.text = value;
+            });
+        }
+
+        protected function mBtnForBrowseAndroidExtNativeLib_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mAndroidExtNativeLibInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("选择一个Android-ARM库文件",FileFilters.ANDROID_LIB_FILE_FILTERS);
+        }
+
+        //iOS
+        protected function mIOSPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.iosPlatformSelected = mIOSPlatformCheck.selected;
+        }
+
+        protected function mIOSOptionsGroup_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.iosExtensionUseRealDevice = mIOSRealDeviceRadio.selected;
+        }
+
+        protected function mBtnForBrowseIOSExtPlatformOptions_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mIOSExtPlatformOptionsInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("选择iOS平台选项配置文件",FileFilters.XML_FILE_FILTERS);
+        }
+
+        protected function mBtnForBrowseIOSExtNativeLib_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mIOSExtNativeLibInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("选择一个iOS库文件",FileFilters.A_FILE_FILTERS);
+        }
+
+        protected function mBtnForBrowseIOSExtAttachments_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑iOS本机扩展附件",mIOSExtAttachmentsInput.text,function(value:String):void{
+                mIOSExtAttachmentsInput.text = value;
+            });
+        }
+
+        //Mac OS X
+        protected function mMacOSXExtPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.macPlatformSelected = mMacOSXExtPlatformCheck.selected;
+        }
+
+        protected function mBtnForBrowseMacOSXExtNativeLib_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mMacOSXExtNativeLibInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForDirectory("选择一个Mac OS X库文件");
+        }
+
+        protected function mBtnForBrowseMacOSXExtAttachments_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Mac OS X本机扩展附件",mMacOSXExtAttachmentsInput.text,function(value:String):void{
+                mMacOSXExtAttachmentsInput.text = value;
+            });
+        }
+
+
+        //Windows
+        protected function mWindowsExtPlatformCheck_changeHandler(event:Event):void{
+            BuildManager.getInstance().aneBuildTarget.windowsPlatformSelected = mWindowsExtPlatformCheck.selected;
+        }
+
+        protected function mBtnForBrowseWindowsExtNativeLib_clickHandler(event:MouseEvent):void{
+            var file:File = new File();
+            file.addEventListener(Event.SELECT,function(event:Event):void{
+                mWindowsExtNativeLibInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen("选择一个Windows库文件",FileFilters.DLL_FILE_FILTERS);
+        }
+
+        protected function mBtnForBrowseWindowsExtAttachments_clickHandler(event:MouseEvent):void{
+            new DialogEditPlatformAttach().show("编辑Windows本机扩展附件",mWindowsExtAttachmentsInput.text,function(value:String):void{
+                mWindowsExtAttachmentsInput.text = value;
+            });
+        }
+
+        protected function aneBuildCompletedHandler(event:ProcessEvent):void{
+            mBtnForStartBuild.enabled = true;
+        }
+
+        protected function mBtnForStartBuild_clickHandler(event:MouseEvent):void{
+            StartBuildTarget();
+        }
+
+        public function StartBuildTarget():void{
+            Console.getInstance().show("开始打包ANE");
+            SaveConfig();
+
+            if(!aneBuildProcess){
+                aneBuildProcess = new ANEBuildProcess();
+                aneBuildProcess.addEventListener(ProcessEvent.COMPLETED,aneBuildCompletedHandler);
+            }
+            mBtnForStartBuild.enabled = false;
+            aneBuildProcess.StartANEBuild();
+        }
+
+        public function SaveConfig():Boolean{
+            BuildManager.getInstance().aneBuildTarget.swcPath = mSWCPathInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneExportPath = mANEExportPathInput.text;
+            BuildManager.getInstance().aneBuildTarget.certificateFilePath = mCertificatePathInput.text;
+            BuildManager.getInstance().aneBuildTarget.certificatePassword = mCertificatePassInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneID = mANEIDInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneName = mANENameInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneVersion = mANEVersionInput.text;
+            BuildManager.getInstance().aneBuildTarget.airVersion = mAIRVersionInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneCopyright = mANECopyrightInput.text;
+            BuildManager.getInstance().aneBuildTarget.aneDescription = mANEDescriptionInput.text;
+            try{
+                if(BuildManager.getInstance().aneBuildTarget.androidPlatformSelected){
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionInitializer = mAndroidExtInitializerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionFinalizer = mAndroidExtFinalizerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionDepends = mAndroidExtDependsInput.text;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionDependsSelected = mAndroidExtDependsCheck.selected;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionAttachments = mAndroidExtAttachmentsInput.text;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionAttachmentsSelected = mAndroidExtAttachmentsCheck.selected;
+                    BuildManager.getInstance().aneBuildTarget.androidExtensionNativeLibFilePath = mAndroidExtNativeLibInput.text;
+                }
+            }catch(e:Error){
+
+            }
+
+            try{
+                if(BuildManager.getInstance().aneBuildTarget.iosPlatformSelected){
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionInitializer = mIOSExtInitializerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionFinalizer = mIOSExtFinalizerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionNativeLibFilePath = mIOSExtNativeLibInput.text;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionAttachments = mIOSExtAttachmentsInput.text;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionAttachmentsSelected = mIOSExtAttachmentsCheck.selected;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionPlatformOptionsSelected = mIOSExtPlatformOptionsCheck.selected;
+                    BuildManager.getInstance().aneBuildTarget.iosExtensionPlatformOptionsFilePath = mIOSExtPlatformOptionsInput.text;
+                }
+            }catch (e:Error){
+
+            }
+
+            try{
+                if(BuildManager.getInstance().aneBuildTarget.macPlatformSelected){
+                    BuildManager.getInstance().aneBuildTarget.macExtensionInitializer = mMacOSXExtInitializerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.macExtensionFinalizer = mMacOSXExtFinalizerInput.text;
+                    BuildManager.getInstance().aneBuildTarget.macExtensionNativeLibFilePath = mMacOSXExtNativeLibInput.text;
+                    BuildManager.getInstance().aneBuildTarget.macExtensionAttachments = mMacOSXExtAttachmentsInput.text;
+                    BuildManager.getInstance().aneBuildTarget.macExtensionAttachmentsSelected = mMacOSXExtAttachmentsCheck.selected;
+                }
+            }catch (e:Error){
+
+            }
+
+            if(!checkANEConfig()){
+                return false;
+            }
+            BuildManager.getInstance().aneBuildTarget.aneDescriptionFileContent = getExtensionSummary() + getANEDescription().toXMLString();
+            return true;
+        }
+
+        public function ShowConfigData():void{
+            if(BuildManager.getInstance().aneBuildTarget.swcPath && BuildManager.getInstance().aneBuildTarget.swcPath.length > 0){
+                mSWCPathInput.text = BuildManager.getInstance().aneBuildTarget.swcPath;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.aneExportPath && BuildManager.getInstance().aneBuildTarget.aneExportPath.length > 0){
+                mANEExportPathInput.text = BuildManager.getInstance().aneBuildTarget.aneExportPath;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.certificateFilePath && BuildManager.getInstance().aneBuildTarget.certificateFilePath.length > 0){
+                mCertificatePathInput.text = BuildManager.getInstance().aneBuildTarget.certificateFilePath;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.aneID && BuildManager.getInstance().aneBuildTarget.aneID.length > 0){
+                mANEIDInput.text = BuildManager.getInstance().aneBuildTarget.aneID;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.aneVersion && BuildManager.getInstance().aneBuildTarget.aneVersion.length > 0){
+                mANEVersionInput.text = BuildManager.getInstance().aneBuildTarget.aneVersion;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.airVersion && BuildManager.getInstance().aneBuildTarget.airVersion.length > 0){
+                mAIRVersionInput.text = BuildManager.getInstance().aneBuildTarget.airVersion;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.aneName && BuildManager.getInstance().aneBuildTarget.aneName.length > 0){
+                mANENameInput.text = BuildManager.getInstance().aneBuildTarget.aneName;
+            }
+            if(BuildManager.getInstance().aneBuildTarget.aneDescription && BuildManager.getInstance().aneBuildTarget.aneDescription.length > 0){
+                mANEDescriptionInput.text = BuildManager.getInstance().aneBuildTarget.aneDescription;
+            }
+            mDefaultExtPlatformCheck.selected = BuildManager.getInstance().aneBuildTarget.defaultPlatformSelected;
+            mCertificatePassInput.text = BuildManager.getInstance().aneBuildTarget.certificatePassword;
+            mUseTimestampCheck.selected = BuildManager.getInstance().aneBuildTarget.useTimestamp;
+            mANECopyrightInput.text = BuildManager.getInstance().aneBuildTarget.aneCopyright;
+            ShiftPlatformData();
+        }
+
+        protected function ShiftPlatformData():void{
+            var build:ANEBuildTarget = BuildManager.getInstance().aneBuildTarget;
+            if(mANEPlatformTN.selectedIndex == 0){
+                mAndroidx86ExtPlatformCheck.selected = build.androidx86PlatformSelected;
+                mAndroidx86ExtNativeLibInput.text = build.androidx86ExtensionNativeLibFilePath;
+                mAndroidx86ExtInitializerInput.text = build.androidx86ExtensionInitializer;
+                mAndroidx86ExtFinalizerInput.text = build.androidx86ExtensionFinalizer;
+                mAndroidx86ExtAttachmentsCheck.selected = build.androidx86ExtensionAttachmentsSelected;
+                mAndroidx86ExtAttachmentsInput.text = build.androidx86ExtensionAttachments;
+                mAndroidx86ExtDependsCheck.selected = build.androidx86ExtensionDependsSelected;
+                mAndroidx86ExtDependsInput.text = build.androidx86ExtensionDepends;
+            }else if(mANEPlatformTN.selectedIndex == 1){
+                mAndroidExtPlatformCheck.selected = build.androidPlatformSelected;
+                mAndroidExtNativeLibInput.text = build.androidExtensionNativeLibFilePath;
+                mAndroidExtInitializerInput.text = build.androidExtensionInitializer;
+                mAndroidExtFinalizerInput.text = build.androidExtensionFinalizer;
+                mAndroidExtAttachmentsCheck.selected = build.androidExtensionAttachmentsSelected;
+                mAndroidExtAttachmentsInput.text = build.androidExtensionAttachments;
+                mAndroidExtDependsCheck.selected = build.androidExtensionDependsSelected;
+                mAndroidExtDependsInput.text = build.androidExtensionDepends;
+            }else if(mANEPlatformTN.selectedIndex == 2){
+                mIOSPlatformCheck.selected = build.iosPlatformSelected;
+                mIOSExtNativeLibInput.text = build.iosExtensionNativeLibFilePath;
+                mIOSExtInitializerInput.text = build.iosExtensionInitializer;
+                mIOSExtFinalizerInput.text = build.iosExtensionFinalizer;
+                mIOSExtAttachmentsCheck.selected = build.iosExtensionAttachmentsSelected;
+                mIOSExtAttachmentsInput.text = build.iosExtensionAttachments;
+                build.iosExtensionUseRealDevice ? mIOSRealDeviceRadio.selected = true : mIOSSimulatorRadio.selected = true;
+                mIOSExtPlatformOptionsCheck.selected = build.iosExtensionPlatformOptionsSelected;
+                mIOSExtPlatformOptionsInput.text = build.iosExtensionPlatformOptionsFilePath;
+            }else if(mANEPlatformTN.selectedIndex == 3){
+                mMacOSXExtPlatformCheck.selected = build.macPlatformSelected;
+                mMacOSXExtNativeLibInput.text = build.macExtensionNativeLibFilePath;
+                mMacOSXExtFinalizerInput.text = build.macExtensionFinalizer;
+                mMacOSXExtInitializerInput.text = build.macExtensionInitializer;
+                mMacOSXExtAttachmentsCheck.selected = build.macExtensionAttachmentsSelected;
+                mMacOSXExtAttachmentsInput.text = build.macExtensionAttachments;
+            }else if(mANEPlatformTN.selectedIndex == 4){
+                mWindowsExtPlatformCheck.selected = build.windowsPlatformSelected;
+                mWindowsExtNativeLibInput.text = build.windowsExtensionNativeLibFilePath;
+                mWindowsExtInitializerInput.text = build.windowsExtensionInitializer;
+                mWindowsExtFinalizerInput.text = build.windowsExtensionFinalizer;
+                mWindowsExtAttachmentsCheck.selected = build.windowsExtensionAttachmentsSelected;
+                mWindowsExtAttachmentsInput.text = build.windowsExtensionAttachments;
+            }
+        }
+
+        private function getExtensionSummary():String{
+            var head:String = "<!--\n\t" +
+                    "Copyright @2014 江龙泉 All Rights Reserved.\n\t" +
+                    "NOTICE:  非常感谢您使用GrapePackager打包工具进行打包。\n\t" +
+                    "SUMMARY:	GrapePackager是一款轻巧的AIR移动应用与ANE打包工具，可以节省开发人员大量的时间以及精力，减少大家学习的成本！宗旨是Make AIR Mobile Development Faster ane more Convenient！\n" +
+                    "-->\n";
+            return head;
+        }
+
+        protected function getANEDescription():XML{
+            var airVersion:String = StringUtil.isEmpty(mAIRVersionInput.text) ? Config.DEFAULT_AIR_VERSION : mAIRVersionInput.text;
+            var xml:XML = XML("<extension xmlns=\"http://ns.adobe.com/air/extension/"+airVersion+"\"></extension>");
+            xml.id = mANEIDInput.text;
+            xml.versionNumber = mANEVersionInput.text;
+            if(!StringUtil.isEmpty(mANENameInput.text)){
+                xml.name = mANENameInput.text;
+            }
+            if(!StringUtil.isEmpty(mANEDescriptionInput.text)){
+                xml.description = mANEDescriptionInput.text;
+            }
+            if(!StringUtil.isEmpty(mANECopyrightInput.text)){
+                xml.copyright = mANECopyrightInput.text;
+            }
+
+            var platformsXML:XML = <platforms></platforms>;
+            var platformXML:XML = null;
+            var applicationDeploymentXML:XML = null;
+            xml.appendChild(platformsXML);
+
+            var build:ANEBuildTarget = BuildManager.getInstance().aneBuildTarget;
+            if(build.defaultPlatformSelected){
+                platformXML = <platform name="default"></platform>;
+                platformsXML.appendChild(platformXML);
+                applicationDeploymentXML = <applicationDeployment/>;
+                platformXML.appendChild(applicationDeploymentXML);
+            }
+            if(build.androidPlatformSelected){
+                platformXML = <platform name="Android-ARM"></platform>;
+                platformsXML.appendChild(platformXML);
+                applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                platformXML.appendChild(applicationDeploymentXML);
+                applicationDeploymentXML.nativeLibrary = mAndroidExtNativeLibFile.name;
+                applicationDeploymentXML.initializer = build.androidExtensionInitializer;
+                if(!StringUtil.isEmpty(build.androidExtensionFinalizer)){
+                    applicationDeploymentXML.finalizer = build.androidExtensionFinalizer;
+                }
+            }
+
+            if(build.androidx86PlatformSelected){
+                platformXML = <platform name="Android-x86"></platform>;
+                platformsXML.appendChild(platformXML);
+                applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                platformXML.appendChild(applicationDeploymentXML);
+                applicationDeploymentXML.nativeLibrary = mAndroidx86ExtNativeLibFile.name;
+                applicationDeploymentXML.initializer = build.androidx86ExtensionInitializer;
+                if(!StringUtil.isEmpty(build.androidx86ExtensionFinalizer)){
+                    applicationDeploymentXML.finalizer = build.androidx86ExtensionFinalizer;
+                }
+            }
+
+            if(build.iosPlatformSelected){
+                if(build.iosExtensionUseRealDevice){
+                    platformXML = <platform name="iPhone-ARM"></platform>;
+                    platformsXML.appendChild(platformXML);
+                    applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                    platformXML.appendChild(applicationDeploymentXML);
+                    applicationDeploymentXML.nativeLibrary = mIOSExtNativeLibFile.name;
+                    applicationDeploymentXML.initializer = build.iosExtensionInitializer;
+                    if(!StringUtil.isEmpty(build.iosExtensionFinalizer)){
+                        applicationDeploymentXML.finalizer = build.iosExtensionFinalizer;
+                    }
+                }else{
+                    platformXML = <platform name="iPhone-x86"></platform>;
+                    platformsXML.appendChild(platformXML);
+                    applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                    platformXML.appendChild(applicationDeploymentXML);
+                    applicationDeploymentXML.nativeLibrary = mIOSExtNativeLibFile.name;
+                    applicationDeploymentXML.initializer = build.iosExtensionInitializer;
+                    if(!StringUtil.isEmpty(build.iosExtensionFinalizer)){
+                        applicationDeploymentXML.finalizer = build.iosExtensionFinalizer;
+                    }
+                }
+            }
+
+            if(build.windowsPlatformSelected){
+                platformXML = <platform name="Windows-x86"></platform>;
+                platformsXML.appendChild(platformXML);
+                applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                platformXML.appendChild(applicationDeploymentXML);
+                applicationDeploymentXML.nativeLibrary = mWindowsExtNativeLibFile.name;
+                applicationDeploymentXML.initializer = build.windowsExtensionInitializer;
+                if(!StringUtil.isEmpty(build.windowsExtensionFinalizer)){
+                    applicationDeploymentXML.finalizer = build.windowsExtensionFinalizer;
+                }
+            }
+
+            if(build.macPlatformSelected){
+                platformXML = <platform name="MacOS-x86"></platform>;
+                platformsXML.appendChild(platformXML);
+                applicationDeploymentXML = <applicationDeployment></applicationDeployment>;
+                platformXML.appendChild(applicationDeploymentXML);
+                applicationDeploymentXML.nativeLibrary = mMacOSXExtNativeLibFile.name;
+                applicationDeploymentXML.initializer = build.macExtensionInitializer;
+                if(!StringUtil.isEmpty(build.macExtensionFinalizer)){
+                    applicationDeploymentXML.finalizer = build.macExtensionFinalizer;
+                }
+            }
+
+            trace(xml);
+            return xml;
+        }
+
+        public function checkANEConfig():Boolean{
+            var file:File = null;
+            if (StringUtil.isEmpty (BuildManager.getInstance().javaFilePath)) {
+                Console.getInstance ().show ("Java命令文件未指定!请点击选项菜单或者使用Ctrl+I快捷键进行设置!");
+                return false;
+            }
+            try {
+                file = new File (BuildManager.getInstance().javaFilePath.replace (/\\/g, "/"));
+                if (! file.exists) {
+                    Console.getInstance ().show ("所指定的Java命令文件不存在!");
+                    return false;
+                }
+            } catch (e:Error) {
+                Console.getInstance ().show ("所指定的Java命令文件不存在!");
+                return false;
+            }
+
+            if (StringUtil.isEmpty (BuildManager.getInstance().flexSDKPath)) {
+                Console.getInstance ().show ("Flex SDK未指定!请点击选项菜单或者使用Ctrl+I快捷键进行设置!");
+                return false;
+            }
+            try {
+                file = new File (BuildManager.getInstance().flexSDKPath.replace (/\\/g, "/"));
+                if (! file.exists) {
+                    Console.getInstance ().show ("所指定的Flex SDK不存在!");
+                    return false;
+                }
+            } catch (e:Error) {
+                Console.getInstance ().show ("所指定的Flex SDK不存在!");
+                return false;
+            }
+
+            try {
+                file = file.resolvePath ("lib/adt.jar");
+                if (! file.exists) {
+                    Console.getInstance ().show ("所指定的Flex SDK已经损坏!");
+                    return false;
+                }else{
+                    BuildManager.getInstance().adtFilePath = file.nativePath.replace(/\\/g,"/");
+                }
+            } catch (e:Error) {
+                Console.getInstance ().show ("所指定的Flex SDK已经损坏!");
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mSWCPathInput.text)){
+                Console.getInstance().show("SWC文件未指定!");
+                return false;
+            }
+            try{
+                file = new File(mSWCPathInput.text.replace(/\\/g,"/"));
+                if(!file.exists){
+                    Console.getInstance().show("所指定的SWC文件不存在!");
+                    return false;
+                }
+            }catch (e:Error){
+                Console.getInstance().show("所指定的SWC文件不存在！")
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mANEExportPathInput.text)){
+                Console.getInstance ().show ("ANE导出路径未指定!");
+                return false;
+            }
+            try{
+                file = new File(mANEExportPathInput.text.replace(/\\/g,"/"));
+                if(!file.exists){
+                    Console.getInstance ().show ("指定的ANE导出路径不存在!");
+                    return false;
+                }
+            }catch (e:Error){
+                Console.getInstance ().show ("指定的ANE导出路径不存在!");
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mCertificatePathInput.text)){
+                Console.getInstance().show("证书文件未指定!");
+                return false;
+            }
+            try{
+                file = new File(mCertificatePathInput.text.replace(/\\/g,"/"));
+                if(!file.exists){
+                    Console.getInstance().show("所指定的证书不存在!");
+                    return false;
+                }
+            }catch (e:Error){
+                Console.getInstance().show("所指定的证书不存在!");
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mCertificatePassInput.text)){
+                Console.getInstance().show("证书密码未输入!");
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mANEIDInput.text)){
+                Console.getInstance().show("ANE唯一标识符没有指定!");
+                return false;
+            }
+
+            if(StringUtil.isEmpty(mANEVersionInput.text)){
+                Console.getInstance().show("ANE版本没有指定!");
+                return false;
+            }
+
+            var target:ANEBuildTarget = BuildManager.getInstance().aneBuildTarget;
+            if(target.androidPlatformSelected){
+                if(StringUtil.isEmpty(target.androidExtensionNativeLibFilePath)){
+                    Console.getInstance().show("Android本机库未指定!");
+                    return false;
+                }
+                try{
+                    mAndroidExtNativeLibFile = new File(target.androidExtensionNativeLibFilePath.replace(/\\/g,"/"));
+                    if(!mAndroidExtNativeLibFile.exists){
+                        Console.getInstance().show("所指定的Android本机库不存在!");
+                        return false;
+                    }
+                }catch (e:Error){
+                    Console.getInstance().show("所指定的Android本机库不存在!");
+                    return false;
+                }
+
+                if(StringUtil.isEmpty(target.androidExtensionInitializer)){
+                    Console.getInstance().show("Android平台本地扩展Initializer未填写!");
+                    return false;
+                }
+            }
+
+            if(target.androidx86PlatformSelected){
+                if(StringUtil.isEmpty(target.androidx86ExtensionNativeLibFilePath)){
+                    Console.getInstance().show("Android-x86本机库未指定!");
+                    return false;
+                }
+                try{
+                    mAndroidx86ExtNativeLibFile = new File(target.androidx86ExtensionNativeLibFilePath.replace(/\\/g,"/"));
+                    if(!mAndroidx86ExtNativeLibFile.exists){
+                        Console.getInstance().show("所指定的Android-86本机库不存在!");
+                        return false;
+                    }
+                }catch (e:Error){
+                    Console.getInstance().show("所指定的Android-x86本机库不存在!");
+                    return false;
+                }
+
+                if(StringUtil.isEmpty(target.androidx86ExtensionInitializer)){
+                    Console.getInstance().show("Android-86平台本地扩展Initializer未填写!");
+                    return false;
+                }
+            }
+
+            if(target.iosPlatformSelected){
+                if(StringUtil.isEmpty(target.iosExtensionNativeLibFilePath)){
+                    Console.getInstance().show("iOS本机库未指定!");
+                    return false;
+                }
+                try{
+                    mIOSExtNativeLibFile = new File(target.iosExtensionNativeLibFilePath.replace(/\\/g,"/"));
+                    if(!mIOSExtNativeLibFile.exists){
+                        Console.getInstance().show("所指定的iOS本机库不存在!");
+                        return false;
+                    }
+                }catch (e:Error){
+                    Console.getInstance().show("所指定的iOS本机库不存在!");
+                    return false;
+                }
+
+                if(StringUtil.isEmpty(target.iosExtensionInitializer)){
+                    Console.getInstance().show("iOS平台本地扩展Initializer未填写!");
+                    return false;
+                }
+            }
+
+            if(target.windowsPlatformSelected){
+                if(StringUtil.isEmpty(target.windowsExtensionNativeLibFilePath)){
+                    Console.getInstance().show("Windows本机库未指定!");
+                    return false;
+                }
+
+                try{
+                    mWindowsExtNativeLibFile = new File(target.windowsExtensionNativeLibFilePath.replace(/\\/g,"/"));
+                    if(!mWindowsExtNativeLibFile.exists){
+                        Console.getInstance().show("所指定的Windows本机库不存在!");
+                        return false;
+                    }
+                }catch (e:Error){
+                    Console.getInstance().show("所指定的Windows本机库不存在!");
+                    return false;
+                }
+
+                if(StringUtil.isEmpty(target.windowsExtensionInitializer)){
+                    Console.getInstance().show("Windows平台本地扩展Initializer未填写!");
+                    return false;
+                }
+            }
+
+            if(target.macPlatformSelected){
+                if(StringUtil.isEmpty(target.macExtensionNativeLibFilePath)){
+                    Console.getInstance().show("MacOS本机库未指定!");
+                    return false;
+                }
+
+                try{
+                    mMacOSXExtNativeLibFile = new File(target.macExtensionNativeLibFilePath.replace(/\\/g,"/"));
+                    if(!mMacOSXExtNativeLibFile.exists){
+                        Console.getInstance().show("所指定的MacOS本机库不存在!");
+                        return false;
+                    }
+                }catch (e:Error){
+                    Console.getInstance().show("所指定的MacOS本机库不存在!");
+                    return false;
+                }
+
+                if(StringUtil.isEmpty(target.macExtensionInitializer)){
+                    Console.getInstance().show("MacOS平台本地扩展Initializer未填写!");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        ]]></fx:Script>
+
+</s:VGroup>

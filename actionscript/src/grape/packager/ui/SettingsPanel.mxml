@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!--
+  Created by Administrator on 2014/8/12.
+-->
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         width="550" height="340" close="window_closeHandler(event)" title="设置" initialize="window_initializedHandler(event)">
+
+    <fx:Script><![CDATA[
+        import grape.packager.filters.FileFilters;
+        import grape.packager.managers.BuildManager;
+
+        import mx.events.CloseEvent;
+        import mx.events.FlexEvent;
+        import mx.managers.PopUpManager;
+
+        protected static var _instance:SettingsPanel = null;
+
+        public function show ():void {
+            if (! _instance) {
+                PopUpManager.addPopUp (this, GrapePackager.packagerTool, true);
+                PopUpManager.centerPopUp (this);
+                _instance = this;
+            }
+        }
+
+        protected function window_initializedHandler (event:FlexEvent):void {
+            mFlexPathInput.text = BuildManager.getInstance().flexSDKPath ? BuildManager.getInstance().flexSDKPath : "";
+            mJavaPathInput.text = BuildManager.getInstance().javaFilePath ? BuildManager.getInstance().javaFilePath : "";
+        }
+
+        protected function window_closeHandler (event:CloseEvent):void {
+            closeWindow ();
+        }
+
+        protected function closeWindow ():void {
+            PopUpManager.removePopUp (this);
+            _instance = null;
+        }
+
+        protected function btnBrowseForJavaPath_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mJavaPathInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForOpen ("选择Java命令");
+        }
+
+        protected function btnBrowseForFlexPath_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mFlexPathInput.text = file.nativePath.replace(/\\/g,"/");
+            });
+            file.browseForDirectory ("选择Flex SDK或AIR SDK路径");
+        }
+
+        protected function btnBrowseForCertPath_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mCertPathInput.text = file.nativePath;
+            });
+            file.browseForOpen ("选择一个证书文件", FileFilters.P12_FILE_FILTERS);
+        }
+
+        protected function btnForSaveConfig_clickHandler (event:MouseEvent):void {
+
+            BuildManager.getInstance().javaFilePath = mJavaPathInput.text;
+            BuildManager.getInstance().flexSDKPath = mFlexPathInput.text;
+
+            closeWindow ();
+        }
+        ]]></fx:Script>
+
+    <s:layout>
+        <s:VerticalLayout gap="10" verticalAlign="top" horizontalAlign="center"/>
+    </s:layout>
+    <s:Panel title="环境配置" width="100%">
+        <s:layout>
+            <s:VerticalLayout gap="10" verticalAlign="middle" paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10"/>
+        </s:layout>
+        <s:HGroup width="100%">
+            <s:Label text="Java Path" width="60" textAlign="center"/>
+            <s:TextInput width="100%" id="mJavaPathInput" editable="false"/>
+            <s:Button label="浏览" id="btnBrowseForJavaPath" click="btnBrowseForJavaPath_clickHandler(event)"/>
+        </s:HGroup>
+        <s:HGroup width="100%">
+            <s:Label text="Flex/AIR SDK Path" width="60" textAlign="center"/>
+            <s:TextInput width="100%" id="mFlexPathInput" editable="false"/>
+            <s:Button label="浏览" id="btnBrowseForFlexPath" click="btnBrowseForFlexPath_clickHandler(event)"/>
+        </s:HGroup>
+    </s:Panel>
+    <s:Panel title="数字签名" width="100%">
+        <s:layout>
+            <s:VerticalLayout gap="10" verticalAlign="middle" paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10"/>
+        </s:layout>
+        <s:HGroup width="100%" verticalAlign="middle">
+            <s:Label text="证书"/>
+            <s:TextInput id="mCertPathInput" width="100%" editable="false"/>
+            <s:Button id="btnBrowseForCertPath" label="浏览" click="btnBrowseForCertPath_clickHandler(event)"/>
+        </s:HGroup>
+        <s:HGroup width="100%" verticalAlign="middle">
+            <s:Label text="密码"/>
+            <s:TextInput displayAsPassword="true" id="mCertPasswordInput" width="100%"/>
+            <s:CheckBox id="mUseTimestapCheck" label="时间戳" width="70"/>
+        </s:HGroup>
+    </s:Panel>
+
+    <s:Button label="保存" click="btnForSaveConfig_clickHandler(event)"/>
+
+</s:TitleWindow>

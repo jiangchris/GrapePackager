@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+                       xmlns:s="library://ns.adobe.com/flex/spark"
+                       xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ui="grape.packager.ui.*"
+                       windowComplete="windowedapplication1_windowCompleteHandler(event)"
+                       invoke="windowedapplication1_invokeHandler(event)"
+                       nativeDragDrop="windowedapplication1_nativeDragDropHandler(event)"
+                       nativeDragEnter="windowedapplication1_nativeDragEnterHandler(event)" showStatusBar="false"
+                       xmlns:views="grape.packager.views.*"
+                       initialize="windowedapplication_initializedHandler(event)"
+                       resize="windowedapplication1_resizeHandler(event)"
+                       addedToStage="windowedapplication1_addedToStageHandler(event)"
+                       mouseDown="windowedapplication1_mouseDownHandler(event)">
+    <fx:Script>
+		<![CDATA[
+        import air.update.ApplicationUpdaterUI;
+        import air.update.events.UpdateEvent;
+
+        import grape.packager.data.ConfigFilePromise;
+
+        import grape.packager.filters.FileFilters;
+        import grape.packager.managers.BuildManager;
+        import grape.packager.managers.KeyboardManager;
+        import grape.packager.managers.ThirdPlatformManager;
+        import grape.packager.ui.SettingsPanel;
+
+        import mx.events.AIREvent;
+
+        import grape.packager.menu.MenuManager;
+
+        import mx.events.FlexEvent;
+        import mx.events.ResizeEvent;
+        import mx.formatters.DateFormatter;
+
+        [Embed(source="../icons/gp_config_48.png")]
+        protected static var IconClass:Class;
+        protected var mGPConfigFileIcon:BitmapData = null;
+        protected var mDragOutForSaveConfigFlag:Boolean = false;
+        protected var mDragOutForSaveConfigCurrentPoint:Point = new Point ();
+        protected var mDragOutForSaveConfigStartPoint:Point = new Point ();
+        protected var mCurrentConfigFile:File = null;
+        protected var mCurrentANEConfigFile:File = null;
+        protected var appUpdater:ApplicationUpdaterUI = new ApplicationUpdaterUI ();
+
+        private static var _packageTool:GrapePackager = null;
+
+        public static function get packagerTool ():GrapePackager {
+            return _packageTool;
+        }
+
+        private function get gpconfigIcon ():BitmapData {
+            if (! mGPConfigFileIcon) {
+                mGPConfigFileIcon = new IconClass ().bitmapData;
+            }
+            return mGPConfigFileIcon;
+        }
+
+        protected function windowedapplication1_resizeHandler (event:ResizeEvent):void {
+            if (_packageTool) {
+                console.y = this.height - console.height;
+            }
+        }
+
+        protected function windowedapplication1_mouseDownHandler (event:MouseEvent):void {
+//            mDragOutForSaveConfigFlag = false;
+//            mDragOutForSaveConfigStartPoint.x = stage.mouseX;
+//            mDragOutForSaveConfigStartPoint.y = stage.mouseY;
+//
+//
+//
+//            stage.addEventListener(MouseEvent.MOUSE_MOVE,stage_dragOutForSaveMouseMoveHandler);
+//            stage.addEventListener(MouseEvent.MOUSE_UP,stage_dragOutForSaveMouseUpHandler);
+        }
+
+        protected function stage_dragOutForSaveMouseMoveHandler (event:MouseEvent):void {
+            if (! mDragOutForSaveConfigFlag) {
+                mDragOutForSaveConfigCurrentPoint.x = stage.mouseX;
+                mDragOutForSaveConfigCurrentPoint.y = stage.mouseY;
+                if (Point.distance (mDragOutForSaveConfigCurrentPoint, mDragOutForSaveConfigStartPoint) > 5) {
+                    var dataForSave:String = JSON.stringify (BuildManager.getInstance ().getConfigData (), null, 4);
+                    var bytes:ByteArray = new ByteArray ();
+                    bytes.writeUTFBytes (dataForSave);
+                    bytes.compress ();
+                    bytes.position = 0;
+
+                    var fp:ConfigFilePromise = new ConfigFilePromise (bytes);
+                    var cb:Clipboard = new Clipboard ();
+                    cb.setData (ClipboardFormats.FILE_PROMISE_LIST_FORMAT, [fp]);
+                    NativeDragManager.doDrag (this, cb, gpconfigIcon);
+
+                    mDragOutForSaveConfigFlag = true;
+                }
+            }
+        }
+
+        protected function stage_dragOutForSaveMouseUpHandler (event:MouseEvent):void {
+            stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_dragOutForSaveMouseMoveHandler);
+            stage.removeEventListener (MouseEvent.MOUSE_UP, stage_dragOutForSaveMouseUpHandler);
+        }
+
+        protected function windowedapplication1_addedToStageHandler (event:Event):void {
+            KeyboardManager.Init (this.nativeWindow.stage);
+
+            nativeWindow.maximize ();
+
+//            checkAppVersion();
+
+            addKeyboardEvents ();
+        }
+
+        protected function addKeyboardEvents ():void {
+            KeyboardManager.AddKeyEvent (KeyboardEvent.KEY_UP, keyboardForStartBuildTarget_upHandler, KeyboardManager.ENTER, true);
+            KeyboardManager.AddKeyEvent (KeyboardEvent.KEY_UP, keyboardForChangeView_upHandler, KeyboardManager.P, true);
+        }
+
+        protected function keyboardForStartBuildTarget_upHandler (event:KeyboardEvent):void {
+            switch (views.selectedIndex) {
+                case 0:
+                    mobilePackView.StartBuildTarget ();
+                    break;
+                case 1:
+                    aneBuildView.StartBuildTarget ();
+                    break;
+            }
+        }
+
+        protected function keyboardForChangeView_upHandler (event:KeyboardEvent):void {
+            views.selectedIndex = (views.selectedIndex + 1) % views.numElements;
+        }
+
+        protected function checkAppVersion ():void {
+            appUpdater.updateURL = Config.UPDATE;
+            appUpdater.isCheckForUpdateVisible = false;
+            appUpdater.addEventListener (UpdateEvent.INITIALIZED, onUpdate);
+            appUpdater.initialize ();
+        }
+
+        protected function onUpdate (event:UpdateEvent):void {
+            appUpdater.localeChain = ["zh_CN", "en_US"];
+            appUpdater.checkNow ();
+        }
+
+        protected var oldID:String = null;
+        protected var reg:RegExp = /<id>.*<\/id>/;
+
+        protected function windowedapplication1_windowCompleteHandler (event:AIREvent):void {
+
+//            var df:DateFormatter = new DateFormatter();
+//            df.formatString = "YYYYMMDDHHNNSS";
+//            var time:String = df.format(new Date());
+//            var newid:String = "<id>GrapePackager" + time + "</id>";
+//            var file:File = new File(File.applicationDirectory.resolvePath("META-INF/AIR/application.xml").nativePath);
+//            var fs:FileStream = new FileStream();
+//            fs.open(file,FileMode.READ);
+//            var str:String = new String(fs.readUTFBytes(fs.bytesAvailable));
+//            oldID = str.match(reg).toString();
+//            str = str.replace(reg,newid);
+//            fs.open(file,FileMode.WRITE);
+//            fs.writeUTFBytes(str);
+//            fs.close();
+//            if(oldID == "<id>GrapePackager</id>" ){
+//                this.addEventListener(Event.CLOSE,returnId);
+//            }
+
+            _packageTool = this;
+
+            var xml:XML = NativeApplication.nativeApplication.applicationDescriptor;
+            var ns:Namespace = xml.namespace ();
+            Config.versionNumber = xml.ns::versionNumber;
+            Config.filename = xml.ns::filename;
+            Config.name = xml.ns::name;
+
+            if (NativeApplication.supportsMenu) {
+                NativeApplication.nativeApplication.menu = MenuManager.getMainMenu ();
+            } else if (NativeWindow.supportsMenu) {
+                nativeWindow.menu = MenuManager.getMainMenu ();
+            }
+        }
+
+        protected function returnId (event:Event):void {
+            var file:File = new File (File.applicationDirectory.resolvePath ("META-INF/AIR/application.xml").nativePath);
+            var fs:FileStream = new FileStream ();
+            fs.open (file, FileMode.READ);
+            var str:String = new String (fs.readUTFBytes (fs.bytesAvailable));
+            str = str.replace (reg, oldID);
+            fs.open (file, FileMode.WRITE);
+            fs.writeUTFBytes (str);
+            fs.close ();
+        }
+
+        protected function windowedapplication_initializedHandler (event:FlexEvent):void {
+            var platformConfigFile:File = File.applicationDirectory.resolvePath (".config");
+            var fs:FileStream = null;
+            var configStr:String = null;
+            var ba:ByteArray = null;
+            if (platformConfigFile.exists) {
+                fs = new FileStream ();
+                fs.open (platformConfigFile, FileMode.READ);
+                ba = new ByteArray ();
+                fs.readBytes (ba, 0, fs.bytesAvailable);
+                ba.uncompress ();
+                configStr = ba.readUTFBytes (ba.bytesAvailable);
+                ThirdPlatformManager.Init (configStr);
+            } else {
+                Console.getInstance ().show ("文件不存在!");
+            }
+        }
+
+        protected function windowedapplication1_invokeHandler (event:InvokeEvent):void {
+            if (event.arguments && event.arguments.length > 0) {
+                var path:String = event.arguments[0];
+                try {
+                    var file:File = new File (path.replace (/\\/g, "/"));
+                    currentConfigFile = file;
+                    ReadConfigFile (file);
+                } catch (e:Error) {
+                    trace (e.getStackTrace ());
+                }
+            }
+        }
+
+        protected function windowedapplication1_nativeDragDropHandler (event:NativeDragEvent):void {
+            var files:Array = event.clipboard.getData (ClipboardFormats.FILE_LIST_FORMAT) as Array;
+            if (files && files.length > 0) {
+                var file:File = files[0];
+                if (file.exists && file.extension) {
+                    if (file.extension.toLowerCase () == "gpc") {
+                        NativeDragManager.acceptDragDrop (this);
+                    }
+                }
+            }
+        }
+
+        protected function windowedapplication1_nativeDragEnterHandler (event:NativeDragEvent):void {
+            var files:Array = event.clipboard.getData (ClipboardFormats.FILE_LIST_FORMAT) as Array;
+            if (files && files.length > 0) {
+                var file:File = files[0];
+                if (file.exists && file.extension) {
+                    if (file.extension.toLowerCase () == "gpc") {
+                        currentConfigFile = file;
+                        ReadConfigFile (file);
+                    }
+                }
+            }
+        }
+
+        protected function removeConfigFileListeners ():void {
+            currentConfigFile.removeEventListener (Event.SELECT, configFileSelectedHandler);
+            currentConfigFile.removeEventListener (Event.CANCEL, configFileCancelHandler);
+        }
+
+        public function OpenConfigFile ():void {
+            currentConfigFile.browseForOpen ("打开配置文件", FileFilters.GRAPE_FILE_FILTERS);
+            currentConfigFile.addEventListener (Event.SELECT, configFileSelectedHandler);
+            currentConfigFile.addEventListener (Event.CANCEL, configFileCancelHandler);
+        }
+
+        protected function configFileSelectedHandler (event:Event):void {
+            removeConfigFileListeners ();
+            ReadConfigFile (currentConfigFile);
+        }
+
+        protected function configFileCancelHandler (event:Event):void {
+            removeConfigFileListeners ();
+        }
+
+        public function ReadConfigFile (file:File):void {
+            try {
+                if (file && file.exists) {
+                    var readFS:FileStream = null;
+                    var configStr:String = null;
+                    var ba:ByteArray = null;
+                    try {
+                        ba = new ByteArray ();
+                        readFS = new FileStream ();
+                        readFS.open (file, FileMode.READ);
+                        readFS.readBytes (ba, 0, readFS.bytesAvailable);
+                        ba.uncompress ();
+                        configStr = ba.readUTFBytes (ba.bytesAvailable);
+                        readFS.close ();
+
+                        var obj:Object = JSON.parse (configStr);
+                        BuildManager.getInstance ().setConfigData (obj);
+                        changeView ();
+                    } catch (e:Error) {
+                        Console.getInstance ().show ("配置文件格式有错!");
+                    }
+                } else {
+                    Console.getInstance ().show ("所选的配置文件不存在!");
+                }
+            } catch (e:Error) {
+                Console.getInstance ().show (e.getStackTrace ());
+            }
+        }
+
+        public function SaveConfigFile ():void {
+            if (mobilePackView) {
+                mobilePackView.SaveConfig ();
+            }
+            if (aneBuildView) {
+                if (! aneBuildView.SaveConfig ())
+                    return;
+            }
+
+            ThirdPlatformManager.SaveConfig ();
+            var configStr:String = JSON.stringify (BuildManager.getInstance ().getConfigData (), null, 4);
+            var saveFS:FileStream = null;
+            var ba:ByteArray = new ByteArray ();
+            ba.writeUTFBytes (configStr);
+            ba.compress ();
+            try {
+                if (currentConfigFile.exists) {
+                    saveFS = new FileStream ();
+                    saveFS.open (currentConfigFile, FileMode.WRITE);
+                    saveFS.writeBytes (ba);
+                    saveFS.close ();
+
+                    Console.getInstance ().show ("配置保存成功!");
+                } else {
+                    currentConfigFile.save (ba, "gp_config.gpc");
+                    Console.getInstance ().show ("配置保存成功!");
+                }
+            } catch (e:Error) {
+                currentConfigFile.save (ba, "gp_config.gpc");
+                Console.getInstance ().show ("配置保存成功!");
+            }
+        }
+
+        protected function views_changeHandler (event:Event):void {
+            changeView ();
+        }
+
+        private function changeView ():void {
+            try {
+                switch (views.selectedIndex) {
+                    case 0:
+                        mobilePackView.ShowConfigData ();
+                        break;
+                    case 1:
+                        aneBuildView.ShowConfigData ();
+                        break;
+                }
+            } catch (e:Error){
+
+            }
+        }
+
+        public function showSettingsPanel ():void {
+            new SettingsPanel ().show ();
+        }
+
+        public function showThirdPlatformPanel():void{
+
+        }
+
+        public function get currentConfigFile ():File {
+            if (! mCurrentConfigFile) {
+                mCurrentConfigFile = File.userDirectory.resolvePath ("gp_config.gpc");
+            }
+            return mCurrentConfigFile;
+        }
+
+        public function set currentConfigFile (value:File):void {
+            if (mCurrentConfigFile != value) {
+                mCurrentConfigFile = value;
+            }
+        }
+
+        public function get currentANEConfigFile ():File {
+            if (! mCurrentANEConfigFile) {
+                mCurrentANEConfigFile = new File ();
+            }
+            return mCurrentANEConfigFile;
+        }
+
+        public function set currentANEConfigFile (value:File):void {
+            if (mCurrentANEConfigFile != value) {
+                mCurrentANEConfigFile = value;
+            }
+        }
+        ]]>
+	</fx:Script>
+    <fx:Declarations>
+        <!-- 将非可视元素（例如服务、值对象）放在此处 -->
+    </fx:Declarations>
+    <mx:ViewStack id="views" width="100%" height="100%" selectedIndex="0" change="views_changeHandler(event)">
+        <mx:Canvas id="mobilePackage" width="100%" height="100%">
+            <views:MobileBuildView id="mobilePackView" width="100%" height="100%"/>
+        </mx:Canvas>
+        <mx:Canvas id="anePackage" width="100%" height="100%">
+            <views:ANEBuildView id="aneBuildView" width="100%" height="100%"/>
+        </mx:Canvas>
+    </mx:ViewStack>
+    <ui:Console id="console" x="0" y="{this.height - console.height}"/>
+</s:WindowedApplication>

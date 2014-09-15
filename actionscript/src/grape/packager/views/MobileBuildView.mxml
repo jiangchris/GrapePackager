@@ -1,0 +1,484 @@
+<?xml version="1.0"?>
+<!--
+  Created by Jung on 2014/8/14.
+-->
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" addedToStage="view_addedToStageHandler(event)">
+
+   <s:Panel title="项目配置" width="100%">
+        <s:layout>
+            <s:VerticalLayout gap="10" paddingTop="10" paddingRight="10" paddingBottom="10" paddingLeft="10"/>
+        </s:layout>
+        <s:HGroup width="100%">
+            <s:VGroup width="50%">
+                 <s:HGroup width="100%" verticalAlign="middle">
+                     <s:HGroup verticalAlign="middle" width="50%">
+                         <s:Label text="项   目   名   称:" width="80"/>
+                         <s:TextInput id="mProjectNameInput" width="100%" editable="true"/>
+                     </s:HGroup>
+                     <s:Line height="100%">
+                         <s:stroke>
+                             <mx:SolidColorStroke color="#bbbbbb"/>
+                         </s:stroke>
+                     </s:Line>
+                     <s:HGroup verticalAlign="middle" width="50%">
+                         <s:Label text="当前版本:"/>
+                         <s:Label id="mProjectVersionInput" text="0.0.0"/>
+                     </s:HGroup>
+                 </s:HGroup>
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="导   出   路   径:" width="80"/>
+                    <s:TextInput id="mExportPathInput" width="100%" editable="false"/>
+                    <s:Button id="btnForBrowseExportPath" label="浏览" click="btnForBrowseExportPath_clickHandler(event)"/>
+                </s:HGroup>
+            </s:VGroup>
+            <s:Line height="100%">
+                <s:stroke>
+                    <mx:SolidColorStroke color="#bbbbbb"/>
+                </s:stroke>
+            </s:Line>
+            <s:VGroup width="50%">
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="工程描述文件:" width="80"/>
+                    <s:TextInput id="mProjectDescriptionInput" width="100%" editable="false"/>
+                    <s:Button id="btnForBrowseProjectDescription" label="浏览" click="btnForBrowseProjectDescription_clickHandler(event)"/>
+                </s:HGroup>
+                <s:HGroup width="100%" verticalAlign="middle">
+                    <s:Label text="工程SWF文件:" width="80"/>
+                    <s:TextInput id="mProjectSWFInput" width="100%" editable="false"/>
+                    <s:Button id="btnForBrowseProjectSWF" label="浏览" click="btnForBrowseProjectSWF_clickHandler(event)"/>
+                </s:HGroup>
+            </s:VGroup>
+        </s:HGroup>
+        <s:Line width="100%">
+           <s:stroke>
+               <mx:SolidColorStroke color="#bbbbbb"/>
+           </s:stroke>
+        </s:Line>
+        <s:HGroup width="100%">
+            <s:Button label="打包(Ctrl+Enter)" width="100%" id="btnForStartPackage" click="btnForStartBuildTarget_clickHandler(event)" height="30"/>
+        </s:HGroup>
+   </s:Panel>
+   <s:Panel title="平台配置" width="100%" height="100%">
+       <mx:TabNavigator id="mPlatformTN" tabWidth="{mPlatformTN.width / 4}" width="100%" height="100%" change="tabNavigatorForPlatform_changeHandler(event)">
+           <s:NavigatorContent label="Android">
+               <s:layout>
+                   <s:VerticalLayout gap="10"/>
+               </s:layout>
+               <s:HGroup width="100%" paddingLeft="10">
+                   <s:CheckBox label="Android平台打包" id="mAndroidPlatformCheck" change="checkForAndroidPlatform_changeHandler(event)"/>
+               </s:HGroup>
+
+               <s:Line width="100%">
+                   <s:stroke>
+                       <mx:SolidColorStroke color="#bbbbbb"/>
+                   </s:stroke>
+               </s:Line>
+
+               <s:HGroup width="100%" verticalAlign="middle" enabled="{mAndroidPlatformCheck.selected}" paddingLeft="10">
+                   <s:Label text="Android包类型:"/>
+                   <s:ComboBox id="mAndroidReleasePackageTypeCombo" selectedIndex="0" dataProvider="{new ArrayList(BuildType.AND_TARGET_TYPES)}" change="comboForAndroidReleaseType_changeHandler(event)"/>
+                   <s:Line height="100%">
+                       <s:stroke>
+                           <mx:SolidColorStroke color="#bbbbbb"/>
+                       </s:stroke>
+                   </s:Line>
+                   <s:CheckBox label="接入第三方平台:" id="mThirdPlatformCheck" change="checkForThirdPlatform_changeHandler(event)"/>
+                   <s:ComboBox id="mThirdPlatformCombo" dataProvider="{ThirdPlatformManager.getAllPlatformsID()}" enabled="{mThirdPlatformCheck.selected}" change="comboForThirdPlatform_changeHandler(event)"/>
+               </s:HGroup>
+
+               <s:Line width="100%">
+                   <s:stroke>
+                       <mx:SolidColorStroke color="#bbbbbb"/>
+                   </s:stroke>
+               </s:Line>
+               <s:Panel title="数字签名" width="100%" enabled="{mAndroidPlatformCheck.selected}">
+                   <s:layout>
+                       <s:VerticalLayout gap="10" paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10"/>
+                   </s:layout>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:Label text="证书文件:" width="60"/>
+                       <s:TextInput id="mAndroidCertificatePathInput" width="100%" editable="false"/>
+                       <s:Button label="浏览" id="btnForBrowseAndroidCert" width="70" click="btnForBrowseAndroidCert_clickHandler(event)"/>
+                   </s:HGroup>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:Label text="密        码:" width="60"/>
+                       <s:TextInput id="mAndroidCertificatePassInput" width="100%" displayAsPassword="true"/>
+                       <s:Line height="100%">
+                           <s:stroke>
+                               <mx:SolidColorStroke color="#bbbbbb"/>
+                           </s:stroke>
+                       </s:Line>
+                       <s:CheckBox label="时间戳" id="mAndroidUseTimestampCheck" width="62" change="checkForAndroidTimestamp_changeHandler(event)"/>
+                   </s:HGroup>
+               </s:Panel>
+
+               <s:Panel title="Android平台设置" width="100%" enabled="{mAndroidPlatformCheck.selected}">
+                   <s:layout>
+                       <s:VerticalLayout gap="10" paddingTop="10" paddingRight="10" paddingBottom="10" paddingLeft="10"/>
+                   </s:layout>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:CheckBox label="包附件:" id="mAndroidAttachmentsCheck" width="60" change="checkForAttachmentsForAndroid_changeHandler(event)"/>
+                       <s:TextInput id="mAndroidAttachmentsInput" width="100%" editable="false" enabled="{mAndroidAttachmentsCheck.selected}"/>
+                       <s:Button label="浏览" id="btnForBrowseAndroidAttachments" enabled="{mAndroidAttachmentsCheck.selected}" click="btnForBrowseAndroidAttachments_clickHandler(event)"/>
+                   </s:HGroup>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:CheckBox label="ANE:" id="mANEForAndroidCheck" width="60" click="checkForANEForAndroid_changeHandler(event)"/>
+                       <s:TextInput id="mANEForAndroidInput" width="100%" editable="false" enabled="{mANEForAndroidCheck.selected}"/>
+                       <s:Button label="浏览" id="btnForBrowseANEForAndroid" enabled="{mANEForAndroidCheck.selected}" click="btnForBrowseANEForAndroid_clickHandler(event)"/>
+                   </s:HGroup>
+               </s:Panel>
+           </s:NavigatorContent>
+           <s:NavigatorContent label="iOS">
+               <s:layout>
+                   <s:VerticalLayout gap="10"/>
+               </s:layout>
+               <s:HGroup width="100%" paddingLeft="10">
+                   <s:CheckBox label="iOS平台打包" id="mIOSPlatformCheck" change="checkForIOSPlatform_changeHandler(event)"/>
+               </s:HGroup>
+
+               <s:Line width="100%">
+                   <s:stroke>
+                       <mx:SolidColorStroke color="#bbbbbb"/>
+                   </s:stroke>
+               </s:Line>
+
+               <s:HGroup width="100%" enabled="{mIOSPlatformCheck.selected}" verticalAlign="middle" paddingLeft="10">
+                   <s:Label text="iOS包类型:"/>
+                   <s:ComboBox id="mIOSReleasePackageTypeCombo" selectedIndex="0" width="200" dataProvider="{new ArrayList(BuildType.IOS_TARGET_TYPES)}" change="comboForIOSReleaseType_changeHandler(event)"/>
+               </s:HGroup>
+
+               <s:Panel title="数字签名" width="100%" enabled="{mIOSPlatformCheck.selected}">
+                   <s:layout>
+                       <s:VerticalLayout gap="10" paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10"/>
+                   </s:layout>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:Label text="证书文件:"/>
+                       <s:TextInput id="mIOSCertificatePathInput" width="100%" editable="false"/>
+                       <s:Button label="浏览" id="btnForBrowseIOSCert" click="btnForBrowseIOSCert_clickHandler(event)"/>
+                   </s:HGroup>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:Label text="密        码:"/>
+                       <s:TextInput id="mIOSCertificatePassInput" width="100%" displayAsPassword="true"/>
+                       <s:Line height="100%">
+                           <s:stroke>
+                               <mx:SolidColorStroke color="#bbbbbb"/>
+                           </s:stroke>
+                       </s:Line>
+                       <s:CheckBox label="时间戳" id="mIOSUseTimestampCheck" width="62" change="checkForIOSTimestamp_changeHandler(event)"/>
+                   </s:HGroup>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:Label text="配置文件:"/>
+                       <s:TextInput id="mIOSProvisioningInput" width="100%" editable="false"/>
+                       <s:Button label="浏览" id="btnForBrowseIOSProvisioning" click="btnForBrowseIOSProvisioning_clickHandler(event)"/>
+                   </s:HGroup>
+               </s:Panel>
+
+               <s:Panel title="iOS平台设置" width="100%" enabled="{mIOSPlatformCheck.selected}">
+                   <s:layout>
+                       <s:VerticalLayout gap="10" paddingTop="10" paddingRight="10" paddingBottom="10" paddingLeft="10"/>
+                   </s:layout>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:CheckBox label="包附件:" id="mIOSAttachmentsCheck" width="60" click="checkForAttachmentsForIOS_changeHandler(event)"/>
+                       <s:TextInput id="mIOSAttachmentsInput" width="100%" editable="false" enabled="{mIOSAttachmentsCheck.selected}"/>
+                       <s:Button label="浏览" id="btnForBrowseIOSAttachments" enabled="{mIOSAttachmentsCheck.selected}" click="btnForBrowseIOSAttachments_clickHandler(event)"/>
+                   </s:HGroup>
+                   <s:HGroup width="100%" verticalAlign="middle">
+                       <s:CheckBox label="ANE:" id="mANEForIOSCheck" width="60" click="checkForANEForIOS_changeHandler(event)"/>
+                       <s:TextInput id="mANEForIOSInput" width="100%" editable="false" enabled="{mANEForIOSCheck.selected}"/>
+                       <s:Button label="浏览" id="btnForBrowseANEForIOS" enabled="{mANEForIOSCheck.selected}" click="btnForBrowseANEForIOS_clickHandler(event)"/>
+                   </s:HGroup>
+               </s:Panel>
+           </s:NavigatorContent>
+       </mx:TabNavigator>
+   </s:Panel>
+
+    <fx:Script><![CDATA[
+        import grape.packager.data.BuildTarget;
+        import grape.packager.events.ProcessEvent;
+        import grape.packager.filters.FileFilters;
+        import grape.packager.managers.BuildManager;
+        import grape.packager.managers.KeyboardManager;
+        import grape.packager.managers.ThirdPlatformManager;
+        import grape.packager.managers.ThirdPlatformManager;
+        import grape.packager.data.BuildType;
+        import grape.packager.process.BuildProcess;
+        import grape.packager.ui.Console;
+        import grape.packager.ui.DialogEditPlatformAttach;
+
+        import mx.collections.ArrayList;
+
+        protected var mBuildProcess:BuildProcess = null;
+
+        protected function view_addedToStageHandler (event:Event):void {
+            comboBoxEditableChanged ();
+        }
+
+        protected function comboBoxEditableChanged ():void {
+            if (mPlatformTN.selectedIndex == 0) {
+                mAndroidReleasePackageTypeCombo.textInput.editable = false;
+                mThirdPlatformCombo.textInput.editable = false;
+            }
+            else {
+                mIOSReleasePackageTypeCombo.textInput.editable = false;
+            }
+        }
+
+        protected function btnForBrowseExportPath_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mExportPathInput.text = file.nativePath.replace (/\\/g, "/");
+                BuildManager.getInstance().exportPath = mExportPathInput.text;
+            });
+            file.browseForDirectory ("选择目标导出路径");
+        }
+
+        protected function btnForBrowseProjectDescription_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mProjectDescriptionInput.text = file.nativePath.replace (/\\/g, "/");
+                BuildManager.getInstance().projectDescriptionPath = mProjectDescriptionInput.text;
+            });
+            file.browseForOpen ("选择工程描述文件", FileFilters.XML_FILE_FILTERS);
+        }
+
+        protected function btnForBrowseProjectSWF_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mProjectSWFInput.text = file.nativePath.replace (/\\/g, "/");
+                BuildManager.getInstance().projectSWFPath = mProjectSWFInput.text;
+            });
+            file.browseForOpen ("选择工程SWF文件", FileFilters.SWF_FILE_FILTERS);
+        }
+
+        protected function btnForBrowseAndroidCert_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mAndroidCertificatePathInput.text = file.nativePath.replace (/\\/g, "/");
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+                buildTarget.certificatePath = mAndroidCertificatePathInput.text;
+            });
+            file.browseForOpen ("选择证书文件", FileFilters.P12_FILE_FILTERS);
+        }
+
+        protected function btnForBrowseIOSCert_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mIOSCertificatePathInput.text = file.nativePath.replace (/\\/g, "/");
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+                buildTarget.certificatePath = mIOSCertificatePathInput.text;
+            });
+            file.browseForOpen ("选择证书文件", FileFilters.P12_FILE_FILTERS);
+        }
+
+        protected function btnForBrowseIOSProvisioning_clickHandler (event:MouseEvent):void {
+            var file:File = new File ();
+            file.addEventListener (Event.SELECT, function (event:Event):void {
+                mIOSProvisioningInput.text = file.nativePath.replace (/\\/g, "/");
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+                buildTarget.provisioningFilePath = mIOSProvisioningInput.text;
+            });
+            file.browseForOpen ("选择配置文件文件", FileFilters.PROVISION_FILE_FILTERS);
+        }
+
+        protected function btnForBrowseAndroidAttachments_clickHandler (event:MouseEvent):void {
+
+            new DialogEditPlatformAttach ().show ("添加Android包附件", mAndroidAttachmentsInput.text, function closeHandler (value:String):void {
+                mAndroidAttachmentsInput.text = value;
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+                buildTarget.packageAttachments = mAndroidAttachmentsInput.text;
+            });
+        }
+
+        protected function btnForBrowseANEForAndroid_clickHandler (event:MouseEvent):void {
+            new DialogEditPlatformAttach ().show ("添加ANE文件", mANEForAndroidInput.text, function closeHandler (value:String):void {
+                mANEForAndroidInput.text = value;
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+                buildTarget.anes = mANEForAndroidInput.text;
+            }, FileFilters.ANE_FILE_FILTERS, false);
+        }
+
+        protected function btnForBrowseIOSAttachments_clickHandler (event:MouseEvent):void {
+            new DialogEditPlatformAttach ().show ("添加iOS包附件", mIOSAttachmentsInput.text, function closeHandler (value:String):void {
+                mIOSAttachmentsInput.text = value;
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+                buildTarget.packageAttachments = mIOSAttachmentsInput.text;
+            });
+        }
+
+        protected function btnForBrowseANEForIOS_clickHandler (event:MouseEvent):void {
+            new DialogEditPlatformAttach ().show ("添加ANE文件", mANEForIOSInput.text, function closeHandler (value:String):void {
+                mANEForIOSInput.text = value;
+                var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+                buildTarget.anes = mANEForIOSInput.text;
+            }, FileFilters.ANE_FILE_FILTERS, false);
+        }
+
+        protected function btnForStartBuildTarget_clickHandler (event:MouseEvent):void {
+            StartBuildTarget();
+        }
+
+        protected function buildCompletedHandler(event:ProcessEvent):void{
+            btnForStartPackage.enabled = true;
+        }
+
+        public function StartBuildTarget():void{
+            SaveConfig();
+            if(BuildManager.getInstance().checkConfig()){
+                if(!mBuildProcess){
+                    mBuildProcess = new BuildProcess();
+                    mBuildProcess.addEventListener(ProcessEvent.COMPLETED,buildCompletedHandler);
+                }
+                btnForStartPackage.enabled = false;
+                mBuildProcess.StartBuildTarget();
+            }
+        }
+
+        protected function checkForAndroidPlatform_changeHandler (event:Event):void {
+            //是否有该BuildTarget
+            if (! BuildManager.getInstance ().hasBuildTarget (BuildTarget.PLATFORM_ANDROID)) {
+                BuildManager.getInstance ().addBuildTarget (BuildTarget.PLATFORM_ANDROID);
+            }
+            var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+            buildTarget.state = mAndroidPlatformCheck.selected;
+        }
+
+        protected function checkForIOSPlatform_changeHandler (event:Event):void {
+            if (! BuildManager.getInstance ().hasBuildTarget (BuildTarget.PLATFORM_IOS)) {
+                BuildManager.getInstance ().addBuildTarget (BuildTarget.PLATFORM_IOS);
+            }
+            var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+            buildTarget.state = mIOSPlatformCheck.selected;
+        }
+
+        protected function checkForThirdPlatform_changeHandler (event:Event):void {
+            var buildTarget:BuildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+            buildTarget.thirdPlatformSelected = mThirdPlatformCheck.selected;
+        }
+
+        protected function checkForANEForAndroid_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+            buildTarget.anesSelected = mANEForAndroidCheck.selected;
+        }
+
+        protected function checkForANEForIOS_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS);
+            buildTarget.anesSelected = mANEForIOSCheck.selected;
+        }
+
+        protected function checkForAttachmentsForIOS_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS);
+            buildTarget.packageAttachmentsSelected = mIOSAttachmentsCheck.selected;
+        }
+
+        protected function checkForAttachmentsForAndroid_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+            buildTarget.packageAttachmentsSelected = mAndroidAttachmentsCheck.selected;
+        }
+
+        protected function checkForIOSTimestamp_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS);
+            buildTarget.useTimestamp = mIOSUseTimestampCheck.selected;
+        }
+
+        protected function checkForAndroidTimestamp_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+            buildTarget.useTimestamp = mAndroidUseTimestampCheck.selected;
+        }
+
+        protected function comboForAndroidReleaseType_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+            buildTarget.releasePackageType = mAndroidReleasePackageTypeCombo.textInput.text;
+        }
+
+        protected function comboForThirdPlatform_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+            buildTarget.thirdPlatformID = mThirdPlatformCombo.textInput.text;
+        }
+
+        protected function comboForIOSReleaseType_changeHandler(event:Event):void{
+            var buildTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS);
+            buildTarget.releasePackageType = mIOSReleasePackageTypeCombo.textInput.text;
+        }
+
+        public function SaveConfig():void{
+            BuildManager.getInstance().projectName = mProjectNameInput.text;
+            BuildManager.getInstance().projectVersionNumber = mProjectVersionInput.text;
+            try{
+                if(BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID)){
+                    var androidTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_ANDROID);
+                    if(androidTarget){
+                        androidTarget.certificatePassword = mAndroidCertificatePassInput.text;
+                        androidTarget.releasePackageType = mAndroidReleasePackageTypeCombo.textInput.text;
+                        if(androidTarget.thirdPlatformSelected){
+                            androidTarget.thirdPlatformID = mThirdPlatformCombo.textInput.text;
+                        }
+                    }
+                }
+            }catch (e:Error){
+
+            }
+
+            try{
+                if(BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS)){
+                    var iosTarget:BuildTarget = BuildManager.getInstance().getBuildTarget(BuildTarget.PLATFORM_IOS);
+                    if(iosTarget){
+                        iosTarget.certificatePassword = mIOSCertificatePassInput.text;
+                        iosTarget.releasePackageType = mIOSReleasePackageTypeCombo.textInput.text;
+                    }
+                }
+            }catch (e:Error){
+
+            }
+
+        }
+
+        public function ShowConfigData():void{
+            mProjectDescriptionInput.text = BuildManager.getInstance().projectDescriptionPath;
+            mProjectNameInput.text = BuildManager.getInstance().projectName;
+            mProjectSWFInput.text = BuildManager.getInstance().projectSWFPath;
+            mExportPathInput.text = BuildManager.getInstance().exportPath;
+            mProjectVersionInput.text = BuildManager.getInstance().projectVersionNumber;
+            ShiftPlatformData();
+        }
+
+        protected function ShiftPlatformData():void{
+            var buildTarget:BuildTarget = null;
+            if (mPlatformTN.selectedIndex == 0) {
+                buildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_ANDROID);
+                if (buildTarget) {
+                    mAndroidPlatformCheck.selected = buildTarget.state;
+                    mAndroidReleasePackageTypeCombo.textInput.text = buildTarget.releasePackageType;
+                    mThirdPlatformCheck.selected = buildTarget.thirdPlatformSelected;
+                    buildTarget.thirdPlatformID ? mThirdPlatformCombo.textInput.text = buildTarget.thirdPlatformID : "";
+                    mAndroidCertificatePathInput.text = buildTarget.certificatePath;
+                    mAndroidCertificatePassInput.text = buildTarget.certificatePassword;
+                    mAndroidUseTimestampCheck.selected = buildTarget.useTimestamp;
+                    mANEForAndroidCheck.selected = buildTarget.anesSelected;
+                    mANEForAndroidInput.text = buildTarget.anes;
+                    mAndroidAttachmentsCheck.selected = buildTarget.packageAttachmentsSelected;
+                    mAndroidAttachmentsInput.text = buildTarget.packageAttachments;
+                }
+            } else {
+                buildTarget = BuildManager.getInstance ().getBuildTarget (BuildTarget.PLATFORM_IOS);
+                if (buildTarget) {
+                    mIOSPlatformCheck.selected = buildTarget.state;
+                    mIOSReleasePackageTypeCombo.textInput.text = buildTarget.releasePackageType;
+                    mIOSCertificatePassInput.text = buildTarget.certificatePassword;
+                    mIOSCertificatePathInput.text = buildTarget.certificatePath;
+                    mIOSUseTimestampCheck.selected = buildTarget.useTimestamp;
+                    mIOSProvisioningInput.text = buildTarget.provisioningFilePath;
+                    mIOSAttachmentsCheck.selected = buildTarget.packageAttachmentsSelected;
+                    mIOSAttachmentsInput.text = buildTarget.packageAttachments;
+                    mANEForIOSCheck.selected = buildTarget.anesSelected;
+                    mANEForIOSInput.text = buildTarget.anes;
+                }
+            }
+            comboBoxEditableChanged ();
+        }
+
+        protected function tabNavigatorForPlatform_changeHandler (event:Event):void {
+            ShiftPlatformData();
+        }
+        ]]></fx:Script>
+</s:VGroup>

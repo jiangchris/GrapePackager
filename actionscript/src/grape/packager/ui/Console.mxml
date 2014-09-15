@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+  Created by Jung on 2014/8/7.
+-->
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         width="100%" height="20%" title="控制台" initialize="initialized_completedHandler(event)">
+
+    <fx:Script><![CDATA[
+        import grape.packager.utils.TimeUtil;
+
+        import mx.events.FlexEvent;
+
+        private static var _instance:Console = null;
+
+        protected function initialized_completedHandler(event:FlexEvent):void{
+            _instance = this;
+        }
+
+        public static function getInstance():Console{
+            return _instance;
+        }
+
+        public function show(msg:String):void{
+            area.appendText(TimeUtil.getCurrentTime("HH:NN:SS") + "  " + msg + "\n");
+        }
+
+        public function clear():void{
+            area.text = "";
+        }
+
+        protected function btnForClear_clickHandler(event:MouseEvent):void{
+            clear();
+        }
+
+        public function hide():void{
+
+        }
+
+        ]]></fx:Script>
+
+    <s:layout>
+        <s:VerticalLayout horizontalAlign="center"/>
+    </s:layout>
+    <s:VGroup width="100%" height="100%" horizontalAlign="center">
+        <s:TextArea id="area" width="100%" height="80%" editable="false" fontSize="16"/>
+        <s:Button label="清空" click="btnForClear_clickHandler(event)"/>
+    </s:VGroup>
+
+</s:Panel>

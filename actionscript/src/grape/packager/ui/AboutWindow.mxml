@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:BaseWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="400" height="200" showStatusBar="false"
+		  initialize="window1_initializeHandler(event)" 
+		  xmlns:ui="grape.packager.ui.*"
+		  close="basewindow1_closeHandler(event)">
+	
+	
+	<ui:layout>
+		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
+	</ui:layout>
+	<fx:Script>
+		<![CDATA[
+        import mx.core.IWindow;
+        import mx.events.FlexEvent;
+
+        protected function window1_initializeHandler (event:FlexEvent):void {
+            versionInfo.text = "当前版本:" + Config.versionNumber;
+        }
+
+        private static var mAboutWindow:AboutWindow = null
+
+        public static function show (parentWindow:IWindow):void {
+            if (mAboutWindow == null) {
+                mAboutWindow = new AboutWindow ();
+                mAboutWindow.parentWindow = parentWindow;
+                mAboutWindow.open ();
+            }
+        }
+
+        protected function basewindow1_closeHandler (event:Event):void {
+            mAboutWindow = null;
+        }
+        ]]>
+	</fx:Script>
+    <s:VGroup width="100%" height="100%">
+        <s:Label text="Grape打包工具" width="100%" textAlign="center" verticalAlign="middle" fontSize="20"/>
+        <s:Label text="作者：江龙泉" width="100%" fontSize="20"/>
+        <s:Label text="QQ：1476324395" width="100%" fontSize="20"/>
+        <s:Label text="博客：http://www.baidu.com/p/JLQ12345" width="100%" fontSize="20"/>
+        <s:Label id="versionInfo" width="100%" fontSize="20"/>
+        <s:Label width="100%" text="Copyright ©2014,江龙泉 All rights reserved." textAlign="center" bottom="0"/>
+    </s:VGroup>
+
+</ui:BaseWindow>
