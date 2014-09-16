@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="主页视图">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<fx:Script>
+		<![CDATA[
+			import grape.packager.demo.Hello;
+			private var helloExtension:Hello = null;
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				if(!helloExtension){
+					helloExtension = new Hello();
+				}
+				tipLbl.text = "aaa";
+				if(msgInput.text.length > 0){
+					tipLbl.text = "返回消息:" + helloExtension.sayHello(msgInput.text);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:HGroup width="100%">
+		<s:TextInput id="msgInput"/>
+		<s:Button label="发送" click="button1_clickHandler(event)"/>
+	</s:HGroup>
+	<s:Label id="tipLbl" width="100%"/>
+	
+</s:View>
