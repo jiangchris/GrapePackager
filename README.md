@@ -1,10 +1,4 @@
 GrapePackager
 =============
 
-GrapePackager是一款轻巧的AIR移动App与ANE打包工具，可以节省开发人员大量的时间以及精力，减少大家学习的成本！aim to make AIR Mobile Development faster and more convenient!
-
-联系方式
-========
-QQ:1476324395
-
-email:yctcjlq@126.com
+GrapePackager is an effective and flexible packaging tool for developing native applications with Adobe Native Extensions(ANE) in Adobe AIR, the aim of which is to save enumerous valuable time and reduce learning cost for developers and to make development faster and more convenient.
